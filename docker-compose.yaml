@@ -1,0 +1,46 @@
+version: '1.1'
+services:
+  wordpostgres:
+    image: postgres:alpine
+    restart: on-failure:5 
+    environment: 
+      - POSTGRES_USER=flash_cards
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=word_api
+    volumes:
+      - psql_volume:/var/lib/postgresql/data
+      - ./flash_cards_api/migrations/up.sql:/docker-entrypoint-initdb.d/up.sql
+    networks:
+      - word_service
+
+  flash_cards_api:
+    build: /flash_cards_api/
+    restart: on-failure:5 
+    environment:
+      - PG_URL=postgresql://flash_cards:password@wordpostgres:5432/word_api
+    ports:
+      - "8000:8000"
+    volumes: 
+      - ./flash_cards_api/config:/app/config/
+    depends_on:
+      - wordpostgres
+    networks:
+      - word_service
+    command: ["./app"]      
+
+  react_spa:
+    build: /ts_spa_react/
+    restart: on-failure:5 
+    ports:
+      - "80:80"
+    depends_on:
+      - flash_cards_api
+    command: ["nginx", "-g", "daemon off;"]
+      
+networks:
+  word_service:
+    driver: bridge
+    name: word_service_network
+
+volumes:
+  psql_volume:
