@@ -47,7 +47,7 @@ export const AppBar = (): JSX.Element => {
             :
             <React.Fragment>
                 <img
-                    src="http://localhost:3000/logo.png"
+                    src="http://localhost/logo.png"
                     alt='logo'
                     style={{ "float": "left", "margin": "10px 40px 0 0", "width": "35px", "cursor": "pointer" }}
                     onClick={() => navigate("/home")}

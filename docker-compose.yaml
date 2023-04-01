@@ -20,8 +20,6 @@ services:
       - PG_URL=postgresql://flash_cards:password@wordpostgres:5432/word_api
     ports:
       - "8000:8000"
-    volumes: 
-      - ./flash_cards_api/config:/app/config/
     depends_on:
       - wordpostgres
     networks:
