@@ -48,14 +48,14 @@ func (t *GoogleTranslate) getWord(wordTransJRes gjson.Result) string {
 	return wordTransJRes.Get(wordPath).String()
 }
 
-func (t *GoogleTranslate) getLangs(wordTransJRes gjson.Result) (srcLang string, trgtLang string) {
+func (t *GoogleTranslate) getLangs(wordTransJRes gjson.Result) (srcLang, trgtLang string) {
 	const (
 		srcLangPath  = "1.3"
 		trgtLangPath = "1.1"
 	)
 	srcLang = wordTransJRes.Get(srcLangPath).String()
 	trgtLang = wordTransJRes.Get(trgtLangPath).String()
-	return
+	return srcLang, trgtLang
 }
 
 func (t *GoogleTranslate) getMainTranslation(wordTransJRes gjson.Result) string {
@@ -102,7 +102,8 @@ func (t *GoogleTranslate) getPOSDefs(defsJRes []gjson.Result) []entity.WordDefin
 }
 
 func (t *GoogleTranslate) getDefs(
-	wordTransJRes gjson.Result) map[entity.PartOfSpeech][]entity.WordDefinition {
+	wordTransJRes gjson.Result,
+) map[entity.PartOfSpeech][]entity.WordDefinition {
 	const (
 		defsPath = "3.1.0"
 		POSPath  = "0"
@@ -133,7 +134,8 @@ func (t *GoogleTranslate) getPOSTransltions(transJRes []gjson.Result) []string {
 }
 
 func (t *GoogleTranslate) getTranslations(
-	wordTransJRes gjson.Result) map[entity.PartOfSpeech][]string {
+	wordTransJRes gjson.Result,
+) map[entity.PartOfSpeech][]string {
 	const (
 		POSPath          = "0"
 		translationsPath = "3.5.0"
@@ -163,7 +165,7 @@ func (t *GoogleTranslate) unmarshal(data []byte) entity.WordTrans {
 	return wordTrans
 }
 
-func New(client *googletransclient.TranlateClient, defaultSrcLang string, defaultTrgtLang string) *GoogleTranslate {
+func New(client *googletransclient.TranlateClient, defaultSrcLang, defaultTrgtLang string) *GoogleTranslate {
 	return &GoogleTranslate{
 		client:          client,
 		defaultSrcLang:  defaultSrcLang,
