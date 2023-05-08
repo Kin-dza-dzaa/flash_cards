@@ -27,7 +27,7 @@ export const WordsTable = (props: { words: WordData[], collectionName: string })
     });
     const handleDelete = async (record: WordRow) => {
         let res = await DeleteWord(record.word, props.collectionName, authContext.userData.jwt);
-        if (res.status == 200) {
+        if (res.ok) {
             setTableData(tableData.filter((value) => value != record));
         }
     }

@@ -32,7 +32,7 @@ export const AddCollection = (props: { collections: string[], setOpen: React.Dis
           for (let word of words) {
             await AddWord(word, fields.collection_name, authContext.userData.jwt)
             .then((res) => {
-            if (res.status != 200) {
+            if (!res.ok) {
                 badWords.push(word);
             }
             });

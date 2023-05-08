@@ -1,8 +1,6 @@
 interface response {
     path: string,
-    status: number,
     message: string,
-    user_words: userWords | null,
 }
 
 export interface wordDefinition {
@@ -49,7 +47,7 @@ export const GetWords = (jwt: string) => async function(): Promise<userWords> {
 
     const UserWords: userWords = {
         words: new Map<string, WordData[]>(
-            Object.entries(data.user_words.words)
+            Object.entries(data.words)
         ),
     } as userWords;
 
@@ -64,7 +62,7 @@ export const GetWords = (jwt: string) => async function(): Promise<userWords> {
     return UserWords;
 }
 
-export const UpdateState = async function(wordData: WordData, collectionName: string, jwt: string): Promise<response> {
+export const UpdateState = async function(wordData: WordData, collectionName: string, jwt: string): Promise<Response> {
     const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
 
     let coll: collection = {
@@ -84,10 +82,10 @@ export const UpdateState = async function(wordData: WordData, collectionName: st
 
     const response: Response = await fetch("http://localhost:8000/v1/words", options);
 
-    return response.json();
+    return response;
 }
 
-export const AddWord = async function(word: string, collectionName: string, jwt: string): Promise<response> {
+export const AddWord = async function(word: string, collectionName: string, jwt: string): Promise<Response> {
     let coll: collection = {
         word: word,
         collection_name: collectionName,
@@ -105,10 +103,10 @@ export const AddWord = async function(word: string, collectionName: string, jwt:
 
     const response: Response = await fetch("http://localhost:8000/v1/words", options);
 
-    return response.json();
+    return response;
 }
 
-export const DeleteWord = async function(word: string, collectionName: string, jwt: string): Promise<response> {
+export const DeleteWord = async function(word: string, collectionName: string, jwt: string): Promise<Response> {
     let coll: collection = {
         word: word,
         collection_name: collectionName,
@@ -124,5 +122,5 @@ export const DeleteWord = async function(word: string, collectionName: string, j
 
     const response: Response = await fetch("http://localhost:8000/v1/words", options);
 
-    return response.json();
+    return response;
 }
