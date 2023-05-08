@@ -9,7 +9,25 @@ services:
       - POSTGRES_DB=word_api
     volumes:
       - psql_volume:/var/lib/postgresql/data
-      - ./flash_cards_api/migrations/up.sql:/docker-entrypoint-initdb.d/up.sql
+    networks:
+      - word_service
+
+  wordpsql_migrations:
+    image: migrate/migrate
+    restart: on-failure:5 
+    depends_on:
+      - wordpostgres
+    networks:
+      - word_service
+    volumes:
+      - ./flash_cards_api/internal/repository/postgresql/migrations:/migrations
+    command: ["-database", "postgresql://flash_cards:password@wordpostgres:5432/word_api?sslmode=disable", "-path", "/migrations/", "up"]
+
+  jaeger_tracing:  
+    image: jaegertracing/all-in-one
+    restart: on-failure:5 
+    ports:
+      - "16686:16686"
     networks:
       - word_service
 
@@ -17,14 +35,16 @@ services:
     build: /flash_cards_api/
     restart: on-failure:5 
     environment:
+      - OTEL_JAEGER=http://jaeger_tracing:14268/api/traces
       - PG_URL=postgresql://flash_cards:password@wordpostgres:5432/word_api
     ports:
       - "8000:8000"
     depends_on:
+      - jaeger_tracing
       - wordpostgres
     networks:
       - word_service
-    command: ["./app"]      
+    command: ["./app"]
 
   react_spa:
     build: /ts_spa_react/
